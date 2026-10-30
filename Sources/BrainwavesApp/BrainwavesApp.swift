@@ -6,6 +6,7 @@ import BrainwavesCore
 import SwiftUI
 
 @main
+@MainActor
 struct BrainwavesApp: App {
     @State private var model = AppModel()
 
