@@ -42,9 +42,10 @@ final class AppModel {
         } catch {
             loadError = "Could not read saved data: \(error.localizedDescription)"
         }
+        let initial = ModePreset.parameters(for: loaded.settings.lastMode, seed: 1)
         userData = loaded
-        parameters = ModePreset.parameters(for: loaded.settings.lastMode, seed: 1)
-        timerChoice = parameters.durationSeconds.map { Int($0 / 60) }
+        parameters = initial
+        timerChoice = initial.durationSeconds.map { Int($0 / 60) }
         showIntro = !loaded.settings.hasSeenIntro
         errorMessage = loadError
         audio.onRestart = { [weak self] in self?.isPlaying = self?.audio.isRunning ?? false }
