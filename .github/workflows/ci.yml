@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+    tags: ["v*"]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  qa-gate:
+    name: QA gate (static checks + QA records)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run QA gate
+        run: python3 scripts/qa_gate.py
+      - name: Show approval status
+        run: python3 scripts/qa_gate.py --status
+
+  core-linux:
+    name: Core tests (Linux)
+    runs-on: ubuntu-latest
+    container: swift:6.0
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test
+        run: swift test
+      - name: Install analysis dependencies
+        run: apt-get update && apt-get install -y --no-install-recommends python3 python3-numpy
+      - name: Render and analyse
+        run: |
+          swift build -c release --product bwrender
+          B=.build/release/bwrender
+          mkdir -p build
+          for m in focus relax sleep; do
+            $B --mode $m --seconds 30 --out build/$m.wav
+            python3 scripts/analyze_wav.py build/$m.wav
+          done
+          $B --seconds 20 --music-level 0 --noise pink --noise-level 1 --master 1 --out build/pink.wav
+          python3 scripts/analyze_wav.py build/pink.wav --expect-slope -3
+          $B --seconds 20 --noise-level 0 --am-rate 16 --am-depth 0.5 --master 1 --out build/am.wav
+          python3 scripts/analyze_wav.py build/am.wav --expect-am 16
+          $B --seconds 20 --music-level 0 --noise-level 0 --binaural 10 --master 1 --out build/bin.wav
+          python3 scripts/analyze_wav.py build/bin.wav --expect-binaural 10
+
+  macos-app:
+    name: macOS app (SwiftPM, no Xcode project)
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - name: Toolchain
+        run: swift --version
+      - name: Test
+        run: swift test
+      - name: Build app bundle
+        run: scripts/build-app.sh
+      - name: Verify bundle
+        run: |
+          test -x build/Brainwaves.app/Contents/MacOS/Brainwaves
+          plutil -lint build/Brainwaves.app/Contents/Info.plist
+          codesign --verify --verbose build/Brainwaves.app
+      - name: Build without amplitude modulation
+        run: swift build -c release --product BrainwavesApp -Xswiftc -DBRAINWAVES_NO_AM
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Brainwaves-app
+          path: build/Brainwaves.app
+          retention-days: 7
+
+  release-gate:
+    name: Release gate (every governed file approved)
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [qa-gate, core-linux, macos-app]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 scripts/qa_gate.py --release
