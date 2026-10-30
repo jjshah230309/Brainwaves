@@ -6,6 +6,7 @@ import BrainwavesCore
 import SwiftUI
 import UniformTypeIdentifiers
 
+@MainActor
 struct SettingsView: View {
     var body: some View {
         TabView {
@@ -18,6 +19,7 @@ struct SettingsView: View {
     }
 }
 
+@MainActor
 private struct HearingSettings: View {
     @Environment(AppModel.self) private var model
 
@@ -40,6 +42,7 @@ private struct HearingSettings: View {
     }
 }
 
+@MainActor
 private struct PersonalizationSettings: View {
     @Environment(AppModel.self) private var model
     @State private var confirmReset = false
@@ -68,6 +71,7 @@ private struct PersonalizationSettings: View {
     }
 }
 
+@MainActor
 private struct PrivacySettings: View {
     @Environment(AppModel.self) private var model
     @State private var confirmDelete = false
@@ -95,6 +99,7 @@ private struct PrivacySettings: View {
     }
 }
 
+@MainActor
 private struct AboutSettings: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {

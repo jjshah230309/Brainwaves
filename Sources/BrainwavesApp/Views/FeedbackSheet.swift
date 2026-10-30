@@ -4,6 +4,7 @@
 import BrainwavesCore
 import SwiftUI
 
+@MainActor
 struct FeedbackSheet: View {
     let record: SessionRecord
     @Environment(AppModel.self) private var model

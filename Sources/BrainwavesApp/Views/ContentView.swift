@@ -11,6 +11,7 @@ enum SidebarItem: Hashable {
     case evidence
 }
 
+@MainActor
 struct ContentView: View {
     @Environment(AppModel.self) private var model
     @State private var selection: SidebarItem? = .mode(.focus)
@@ -74,6 +75,7 @@ struct ContentView: View {
     }
 }
 
+@MainActor
 struct IntroView: View {
     @Environment(AppModel.self) private var model
 

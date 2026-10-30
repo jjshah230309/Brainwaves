@@ -4,6 +4,7 @@
 import BrainwavesCore
 import SwiftUI
 
+@MainActor
 struct MixerView: View {
     @Environment(AppModel.self) private var model
 
@@ -64,6 +65,7 @@ func card(_ id: String) -> EvidenceCard {
     UserFacingCopy.evidenceCards.first { $0.id == id } ?? UserFacingCopy.evidenceCards[0]
 }
 
+@MainActor
 struct EvidenceCardView: View {
     let card: EvidenceCard
 
@@ -89,6 +91,7 @@ struct EvidenceCardView: View {
     }
 }
 
+@MainActor
 struct EvidenceView: View {
     var body: some View {
         ScrollView {

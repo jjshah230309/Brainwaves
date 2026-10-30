@@ -4,6 +4,7 @@
 import BrainwavesCore
 import SwiftUI
 
+@MainActor
 struct PlayerView: View {
     let mode: Mode
     @Environment(AppModel.self) private var model
@@ -95,6 +96,7 @@ struct PlayerView: View {
 }
 
 /// Slider with a visible title, a spoken value and full keyboard support.
+@MainActor
 struct LabeledSlider: View {
     let title: String
     let value: Double
@@ -124,6 +126,7 @@ struct LabeledSlider: View {
     }
 }
 
+@MainActor
 struct Callout: View {
     let text: String
     let systemImage: String
@@ -144,6 +147,7 @@ struct Callout: View {
 
 /// Slow visual breathing cue in phase with the audio swell. With Reduce
 /// Motion on, it is a static ring with a text cue.
+@MainActor
 struct BreathingGuide: View {
     let breathsPerMinute: Double
     let start: Date?

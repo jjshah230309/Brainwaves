@@ -4,6 +4,7 @@
 import BrainwavesCore
 import SwiftUI
 
+@MainActor
 struct SelfTestView: View {
     @Environment(AppModel.self) private var model
     @State private var comparison: SelfTestComparison = .noise
@@ -112,6 +113,7 @@ struct SelfTestView: View {
 
 /// Three-minute psychomotor-vigilance-style task. The stimulus appears once every
 /// 2–10 s (far below any flashing threshold) and the user presses Space or clicks.
+@MainActor
 struct ReactionTaskView: View {
     let onFinish: (ReactionTimeResult) -> Void
 

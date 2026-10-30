@@ -4,6 +4,7 @@
 import BrainwavesCore
 import SwiftUI
 
+@MainActor
 struct ExperimentalView: View {
     @Environment(AppModel.self) private var model
     @State private var confirmHeadphones = false
